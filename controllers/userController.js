@@ -50,13 +50,14 @@ export const registerUser = async (req, res) => {
         )
 
     } catch (err) {
+        console.log(err.message)
         return res.status(400).json({ message: err.message })
     }
 }
 
 // Controller for user login
 // Post: /api/user/login
-export const getUserById = async (req, res) => {
+export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -93,7 +94,7 @@ export const getUserById = async (req, res) => {
 // Controller for gettng user by id
 // Get: /api/users/data
 
-export const loginUser = async (req, res) => {
+export const getUserById = async (req, res) => {
     try {
         const userId = req.userId;
 

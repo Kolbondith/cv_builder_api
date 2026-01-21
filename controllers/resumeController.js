@@ -2,7 +2,7 @@
 
 //Controller for create a new resume
 
-import Resume from "../models/ResumeModel";
+import Resume from "../models/ResumeModel.js";
 
 // Post: /api/resume/create
 export const createResume = async (req, res) => {
@@ -13,7 +13,7 @@ export const createResume = async (req, res) => {
         // create new resume 
         const newResume = await Resume.create({ userId, title })
         // return success message 
-        return res.status(201).sjon({ message: 'resume create successfully', resume: newResume })
+        return res.status(201).json({ message: 'resume create successfully', resume: newResume })
     } catch (error) {
         return res.status(400).json({ message: error.message })
     }
@@ -82,3 +82,21 @@ export const getPublicResumeById = async (req, res) => {
 }
 
 // Patch: /api/resume/edit
+
+export const updateResume = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { resumeId } = req.params;
+        const { resumeData } = req.body
+
+        const newResume = await Resume.findOneAndUpdate({ userId, _id: resumeId }, resumeData, { new: true })
+        if (!newResume) {
+            return res.status(404).json({ message: "status not found" })
+        }
+
+        return res.status(200).json({ resume: newResume })
+    } catch (error) {
+        return res.status(400).json({ message: error.message })
+    }
+
+}

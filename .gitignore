@@ -1,100 +1,21 @@
-# ---------------------------------------------------
-# Node / Express Server
-# ---------------------------------------------------
-server/node_modules/
-server/dist/
-server/build/
-server/.env
-server/.env.local
-server/.env.development
-server/.env.production
-server/.env.test
+node_modules/
+dist/
+build/
 
-# Logs
-server/npm-debug.log*
-server/yarn-debug.log*
-server/yarn-error.log*
-server/pnpm-debug.log*
-
-# Temporary files
-server/.cache/
-server/.tmp/
-server/coverage/
-
-# Database
-server/*.db
-server/mongo-data/
-server/docker-data/
-
-# ---------------------------------------------------
-# React / Next.js Client
-# ---------------------------------------------------
-client/node_modules/
-client/.next/
-client/out/
-client/build/
-client/dist/
-client/.env
-client/.env.local
-client/.env.development
-client/.env.production
-client/.env.test
-
-# Logs
-client/npm-debug.log*
-client/yarn-debug.log*
-client/yarn-error.log*
-client/pnpm-debug.log*
-
-# Cache
-client/.cache/
-client/.turbo/
-client/.vite/
-
-# ---------------------------------------------------
-# OS / Editor Files
-# ---------------------------------------------------
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Linux temp
-*~
-
-# VS Code
-.vscode/
-.history/
-*.code-workspace
-
-# ---------------------------------------------------
-# Git / Misc
-# ---------------------------------------------------
-.gitignore
-.gitkeep
-
-# Local environment & dev tools
 .env
 .env.*
 *.local
 
-# Optional: Logs & debug
-logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Optional: Docker
-docker/
-docker-compose.override.yml
+.cache/
+.tmp/
+coverage/
 
-# Optional: Snapshots
-*.png
-*.jpg
-*.jpeg
-*.webp
-*.svg
-
+*.db
+mongo-data/
+docker-data/

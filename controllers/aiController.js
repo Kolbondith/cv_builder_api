@@ -2,6 +2,7 @@
 // POST: /api/ai/enhance-pro-sum
 
 import ai from "../config/ai.js";
+import Resume from "../models/ResumeModel.js";
 
 // Optional: basic cleanup to avoid empty/whitespace-only inputs
 const normalizeText = (text) => String(text || "").trim();
@@ -116,6 +117,118 @@ export const enhanceJobDescription = async (req, res) => {
         console.error("enhanceProfessionalSummary error:", error);
         return res.status(400).json({
             message: "Server error while enhancing professional summary.",
+        });
+    }
+};
+
+function safeParseJSON(text) {
+    try {
+        return JSON.parse(text);
+    } catch {
+        const cleaned = text.replace(/```json|```/g, "").trim();
+        return JSON.parse(cleaned);
+    }
+}
+
+export const uploadResume = async (req, res) => {
+    try {
+        const { resumeText, title } = req.body;
+        const userId = req.userId;
+
+        if (!resumeText) {
+            return res.status(400).json({ message: "Missing resumeText" });
+        }
+
+        // --- AI PROMPT (MATCHES ResumeSchema) ---
+        const prompt = `
+                SYSTEM:
+                You are an expert AI agent for resume parsing.
+                Return ONLY valid JSON.
+                No markdown. No explanations.
+
+                JSON schema:
+                {
+                "personal_info": {
+                    "full_name": string,
+                    "profession": string | null,
+                    "email": string | null,
+                    "phone": string | null,
+                    "location": string | null,
+                    "linkedin": string | null,
+                    "website": string | null
+                },
+                "skills": string[],
+                "experience": {
+                    "company": string,
+                    "position": string,
+                    "start_date": string | null,
+                    "end_date": string | null,
+                    "description": string | null,
+                    "is_current": boolean
+                }[],
+                "education": {
+                    "institution": string,
+                    "degree": string | null,
+                    "field": string | null,
+                    "graduation_date": string | null,
+                    "gpa": string | null
+                }[]
+                }
+
+                USER:
+                Extract data from this resume:
+                """
+                ${resumeText}
+                """
+                `;
+
+        // --- CALL GEMINI ---
+        const result = await ai.models.generateContent({
+            model: "gemini-3-flash-preview",
+            contents: prompt,
+        });
+
+        const rawText = result.response.text();
+
+        // --- PARSE AI OUTPUT ---
+        let resumeData;
+        try {
+            resumeData = safeParseJSON(rawText);
+        } catch (err) {
+            console.error("Gemini JSON error:", rawText);
+            return res.status(502).json({
+                message: "AI returned invalid JSON. Please retry.",
+            });
+        }
+
+        // --- MINIMUM VALIDATION ---
+        if (
+            !resumeData.personal_info?.full_name ||
+            !Array.isArray(resumeData.skills)
+        ) {
+            return res.status(502).json({
+                message: "AI response missing required fields.",
+            });
+        }
+
+        // --- SAVE TO DATABASE ---
+        const newResume = await Resume.create({
+            userId,
+            title: title || "Untitled Resume",
+            skills: resumeData.skills,
+            personal_info: resumeData.personal_info,
+            experience: resumeData.experience || [],
+            education: resumeData.education || [],
+        });
+
+        return res.status(200).json({
+            resume_id: newResume._id,
+        });
+
+    } catch (error) {
+        console.error("uploadResume error:", error);
+        return res.status(500).json({
+            message: "Server error while uploading resume.",
         });
     }
 };
