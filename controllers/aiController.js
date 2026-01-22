@@ -155,7 +155,8 @@ export const uploadResume = async (req, res) => {
                     "phone": string | null,
                     "location": string | null,
                     "linkedin": string | null,
-                    "website": string | null
+                    "website": string | null,
+                    professional_summary: string | null
                 },
                 "skills": string[],
                 "experience": {
@@ -188,7 +189,7 @@ export const uploadResume = async (req, res) => {
             contents: prompt,
         });
 
-        const rawText = result.response.text();
+        const rawText = result.text;
 
         // --- PARSE AI OUTPUT ---
         let resumeData;
@@ -244,7 +245,7 @@ function extractText(result) {
 
     // 2) result.response.text()
     if (result.response && typeof result.response.text === "function") {
-        const t = result.response.text();
+        const t = result.response.text;
         if (typeof t === "string") return t.trim();
     }
 

@@ -27,6 +27,7 @@ const ResumeSchema = new mongoose.Schema({
         image: { type: String, default: '' },
         full_name: { type: String, default: '' },
         profession: { type: String, default: '' },
+        professional_summary: { type: String, default: '' },
         email: { type: String, default: '' },
         phone: { type: String, default: '' },
         location: { type: String, default: '' },
