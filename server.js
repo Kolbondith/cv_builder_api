@@ -9,18 +9,19 @@ import aiRouter from './routes/aiRoutes.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-//Database connection 
+// Database connection 
+await connectDB();
 
-await connectDB()
+app.use(express.json());
+app.use(cors());
 
-app.use(express.json())
-app.use(cors())
-
-app.get('/', (req, res) => res.send("Server s live...."));
+app.get('/', (req, res) => res.send("Server is live...."));
 app.use('/api/users', userRouter);
 app.use('/api/resumes', resumeRouter);
 app.use('/api/ai', aiRouter);
 
-app.listen(PORT, () => {
-    console.log(`Server os running on ${PORT}`)
-})
+// 🔥 KEY CHANGE HERE → allow network access
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on: http://localhost:${PORT}`);
+    console.log(`Network access available at: http://YOUR_LOCAL_IP:${PORT}`);
+});

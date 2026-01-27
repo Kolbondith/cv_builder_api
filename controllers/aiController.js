@@ -72,24 +72,33 @@ export const enhanceJobDescription = async (req, res) => {
 
         // Prompt: strong + safe + recruiter-friendly
         const prompt = `
-                    You are an expert resume writer and hiring manager.
+                   You are an expert resume writer and hiring manager.
                     Rewrite and enhance the JOB DESCRIPTION below.
 
                     Goals:
                     - Keep the meaning the same (do NOT invent requirements, tools, or numbers)
                     - Fix grammar and improve clarity
                     - Make it professional, modern, and easy to read
-                    - Use strong action verbs and clear responsibilities
-                    - Separate into sections with headings:
-                    1) Role Overview (2–3 lines)
-                    2) Key Responsibilities (5–10 bullets)
-                    3) Requirements (5–10 bullets)
-                    4) Nice-to-Have (optional, 3–6 bullets)
+                    - Use strong action verbs
                     - Keep it concise
+                    - Produce bullet points using "•" only (no stars, no emojis, no dashes)
+
+                    Structure to follow:
+
+                    1) Role Overview (2–3 lines)
+
+                    2) Key Responsibilities
+                    • 5–10 bullet points
+
+                    3) Requirements
+                    • 5–10 bullet points
+
+                    4) Nice-to-Have (Optional)
+                    • 3–6 bullet points
 
                     Return ONLY the improved job description text.
 
-                    Original job description:
+                    Original Job Description:
                     """${userContent}"""
                     `.trim();
 
@@ -155,7 +164,8 @@ export const uploadResume = async (req, res) => {
                     "phone": string | null,
                     "location": string | null,
                     "linkedin": string | null,
-                    "website": string | null
+                    "website": string | null,
+                    "professional_summary": string | null
                 },
                 "skills": string[],
                 "experience": {
@@ -188,7 +198,7 @@ export const uploadResume = async (req, res) => {
             contents: prompt,
         });
 
-        const rawText = result.response.text();
+        const rawText = result.text;
 
         // --- PARSE AI OUTPUT ---
         let resumeData;
@@ -244,7 +254,7 @@ function extractText(result) {
 
     // 2) result.response.text()
     if (result.response && typeof result.response.text === "function") {
-        const t = result.response.text();
+        const t = result.response.text;
         if (typeof t === "string") return t.trim();
     }
 
