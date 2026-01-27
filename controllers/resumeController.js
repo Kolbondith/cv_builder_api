@@ -10,10 +10,10 @@ import fs from 'fs'
 export const createResume = async (req, res) => {
     try {
         const userId = req.userId;
-        const { title } = req.body;
+        const { title, template } = req.body;
 
         // create new resume 
-        const newResume = await Resume.create({ userId, title })
+        const newResume = await Resume.create({ userId, title, template })
         // return success message 
         return res.status(201).json({ message: 'resume create successfully', resume: newResume })
     } catch (error) {
