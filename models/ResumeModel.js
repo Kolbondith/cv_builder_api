@@ -63,6 +63,12 @@ const ResumeSchema = new mongoose.Schema({
 
 
         }
+    ],
+    languages: [
+        {
+            name: { type: String },
+            level: { type: String },
+        }
     ]
 }, { timestamps: true, minimize: false });
 
