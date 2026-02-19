@@ -1,11 +1,12 @@
 import express from 'express'
-import { getUserById, getUserResumes, loginUser, registerUser } from '../controllers/userController.js';
+import { getUserById, getUserResumes, loginUser, registerUser, googleSignin } from '../controllers/userController.js';
 import protect from '../middlewares/authMiddlewre.js';
 
 const userRouter = express.Router();
 
 userRouter.post('/register', registerUser);
 userRouter.post('/login', loginUser);
+userRouter.post('/googlesignin', googleSignin)
 userRouter.get('/data', protect, getUserById);
 userRouter.get('/resumes', protect, getUserResumes);
 

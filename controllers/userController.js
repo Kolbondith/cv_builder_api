@@ -2,6 +2,10 @@ import User from "../models/UserModel.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import Resume from "../models/ResumeModel.js";
+import { OAuth2Client } from "google-auth-library";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 
 
 const generateToken = (userId) => {
@@ -132,4 +136,49 @@ export const getUserResumes = async (req, res) => {
     } catch (error) {
         return res.status(400).json({ message: err.message })
     }
+}
+
+
+// Google Sign in 
+export const googleSignin = async (req, res) => {
+    try {
+        const { token } = req.body;
+
+        if (!token) return res.status(400).json({ message: "Missing Google Token" })
+
+        //Verify Google Token 
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        const { sub, email, name } = payload;
+
+        // Check if user exits 
+        let user = await User.findOne({ email })
+
+        //Create user if not exist 
+        if (!user) {
+            user = await User.create({
+                name,
+                email,
+                google_id: sub,
+                password: null, // No pasdword for google users 
+            })
+        }
+
+        const jwtToken = generateToken(user._id);
+        user.password = undefined;
+
+        res.status(200).json({
+            message: 'Google SignIn successfull',
+            token: jwtToken,
+            user
+        })
+    } catch (error) {
+        return res.status(400).json({ message: err.message })
+    }
+
+
 }
